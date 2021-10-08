@@ -1,12 +1,15 @@
 import * as momentTimeZone from 'moment-timezone';
 
-import { AllExceptionsFilter } from './filters/http-exception.filter';
 import { AppModule } from './app.module';
+import {CustomHttpExceptionFilter} from './filters/http-exception.filter';
+import { LoggingInterceptor } from './interceptors/logging.interceptor'
 import { NestFactory } from '@nestjs/core';
+import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(new CustomHttpExceptionFilter());
+  app.useGlobalInterceptors(new TimeoutInterceptor());
 
   Date.prototype.toJSON = function (): any {
     return momentTimeZone(this)

@@ -4,18 +4,24 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Injectable,
   Logger,
 } from '@nestjs/common';
 
-@Catch()
-export class AllExceptionsFilter implements ExceptionFilter {
+import { RpcException } from '@nestjs/microservices';
 
-  private readonly logger = new Logger(AllExceptionsFilter.name);
+@Injectable()
+@Catch()
+export class CustomHttpExceptionFilter implements ExceptionFilter {
+
+  private readonly logger = new Logger(CustomHttpExceptionFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
+
+    console.log(exception.constructor.name)
 
     console.log(`exception: ${JSON.stringify(exception)}`);
 
@@ -35,6 +41,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
+      message: message
     });
   }
 }
